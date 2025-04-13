@@ -1,0 +1,12 @@
+﻿<% layout('layout') %>
+<h2>Личные сообщения</h2>
+<div id="chat-container">
+  <% messages.forEach(msg => { %>
+    <p><strong><%= msg.sender %>:</strong> <%= msg.text %></p>
+  <% }) %>
+</div>
+<form action="/chat/send" method="POST">
+  <input type="text" name="receiver" placeholder="Кому">
+  <input type="text" name="text" placeholder="Сообщение">
+  <button type="submit">Отправить</button>
+</form>

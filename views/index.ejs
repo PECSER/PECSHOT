@@ -1,0 +1,37 @@
+﻿<!-- Навбар -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-logo">PECSHOT</div>
+    <ul class="navbar-links">
+      <li><a href="profile">Профиль</a></li>
+      <li><a href="/inventory">Инвентарь</a></li>
+      <li><a href="cases">Кейсы</a></li>
+      <li><a href="shop">Магазин</a></li>
+      <li><a href="trade">Обмен</a></li>
+      <li><a href="chat">Чат</a></li>
+      <li><a href="logout">Выход</a></li>
+    </ul>
+    
+  </div>
+</nav>
+
+
+<main class="container">
+  <div class="profile-card">
+    <h2>Добро пожаловать в <span style="color:#a855f7;">PECSHOT</span></h2>
+    <p>Тут ты можешь открывать кейсы, обмениваться, скупать и продавать скины.</p>
+    <p>Чтобы начать — авторизуйся через Steam!</p>
+    <br>
+    <a href="/auth/steam" class="steam-login-btn">Войти через Steam</a>
+  </div>
+</main>
+
+<script>
+   // Подсветка активного пункта меню
+  const navLinks = document.querySelectorAll("nav a");
+  navLinks.forEach(link => {
+    if (link.href === window.location.href) {
+      link.classList.add("active");
+    }
+  });
+</script>

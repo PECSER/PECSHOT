@@ -1,0 +1,43 @@
+﻿<!-- Навбар -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-logo">PECSHOT</div>
+    <ul class="navbar-links">
+      <li><a href="profile">Профиль</a></li>
+      <li><a href="/inventory">Инвентарь</a></li>
+      <li><a href="cases">Кейсы</a></li>
+      <li><a href="shop">Магазин</a></li>
+      <li><a href="trade">Обмен</a></li>
+      <li><a href="chat">Чат</a></li>
+      <li><a href="logout">Выход</a></li>
+    </ul>
+    <div class="balance">💰Coins: <span id="coinsCount"><%= user.balance %></span></div>
+
+  </div>
+</nav>
+
+<div class="container">
+  <div class="profile-card">
+    <img src="<%= user.avatar %>" alt="Avatar">
+    <h2><%= user.personaname %></h2>
+    <p>Coins: <%= user.coins || 0 %></p>
+    <p>VIP: <%= user.isVip ? 'Да' : 'Нет' %></p>
+    <p>Уровень: <%= user.level || 1 %> (XP: <%= user.xp || 0 %>)</p>
+    
+    <div class="level-bar">
+      <div class="xp" style="width: <%= Math.min(100, user.xp || 0) %>%"></div>
+    </div>
+
+    <a href="/inventory">Перейти в инвентарь</a>
+  </div>
+</div>
+
+<script>
+  // Подсветка активного пункта меню
+  const navLinks = document.querySelectorAll("nav a");
+  navLinks.forEach(link => {
+    if (link.href === window.location.href) {
+      link.classList.add("active");
+    }
+  });
+</script>

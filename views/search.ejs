@@ -1,0 +1,11 @@
+﻿<% layout('layout') %>
+<h2>Поиск</h2>
+<form method="GET">
+  <input type="text" name="q" placeholder="Найти пользователя">
+  <button type="submit">Поиск</button>
+</form>
+<ul>
+  <% results.forEach(u => { %>
+    <li><%= u.personaname %></li>
+  <% }) %>
+</ul>

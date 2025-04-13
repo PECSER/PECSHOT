@@ -1,0 +1,7 @@
+﻿<% layout('layout') %>
+<h2>Топ пользователей</h2>
+<ol>
+  <% topUsers.forEach(u => { %>
+    <li><%= u.personaname %> — <%= u.coins %> coins</li>
+  <% }) %>
+</ol>

@@ -1,0 +1,335 @@
+﻿<!-- Навбар -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-logo">PECSHOT</div>
+    <ul class="navbar-links">
+      <li><a href="profile">Профиль</a></li>
+      <li><a href="/inventory">Инвентарь</a></li>
+      <li><a href="cases">Кейсы</a></li>
+      <li><a href="shop">Магазин</a></li>
+      <li><a href="trade">Обмен</a></li>
+      <li><a href="chat">Чат</a></li>
+      <li><a href="logout">Выход</a></li>
+    </ul>
+    <div class="balance">💰Coins: <span id="coinsCount"><%= user.balance %></span></div>
+
+  </div>
+</nav>
+
+
+<main class="container">
+  <% if (!caseData) { %>
+    <h2>Кейс не найден 😢</h2>
+    <p>Возможно, он был удалён или вы перешли по неверной ссылке.</p>
+  <% } else { %>
+    <h2><%= caseData.name %></h2>
+    <img src="<%= caseData.image %>" alt="<%= caseData.name %>">
+    <p>Цена: <%= caseData.price ? caseData.price + ' Coins' : 'Бесплатно' %></p>
+
+    <button class="open-btn" id="startRoll">Открыть кейс</button>
+
+    <div class="case-opening">
+      <div class="roller-wrapper">
+        <div class="roller" id="roller">
+          <% 
+            function getRandomSkin(skins) {
+              return skins[Math.floor(Math.random() * skins.length)];
+            }
+
+            const rollerSkins = [];
+            for (let i = 0; i < 50; i++) {
+              rollerSkins.push(getRandomSkin(caseData.skins));
+            }
+          %>
+          <% rollerSkins.forEach(skin => { %>
+            <div class="roll-item rarity-<%= skin.rarity %>">
+              <img src="<%= skin.image %>" alt="<%= skin.name %>">
+            </div>
+          <% }); %>
+        </div>
+      </div>
+    </div>
+
+    <h3>Скины в кейсе:</h3>
+
+    <div class="skins-grid">
+      <% caseData.skins.forEach(skin => { %>
+        <div class="skin-card rarity-<%= skin.rarity %>">
+          <img src="<%= skin.image %>" alt="<%= skin.name %>">
+          <p><strong><%= skin.name %></strong></p>
+        </div>
+      <% }); %>
+    </div>
+
+    <!-- Модалка -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal-content">
+        <h2>Вы выиграли!</h2>
+        <img src="https://via.placeholder.com/200x100.png?text=Skin" id="modalSkinImage" alt="Скин">
+        <p id="modalSkinName">AK-47 | Redline</p>
+        <p>Цена: <span id="modalSkinPrice">0</span> коинов</p>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button id="sellForCoins">Продать за коины</button>
+          <button id="putToMarket">Выставить на маркет</button>
+          <button id="closeModal">Ок</button>
+        </div>
+      </div>
+    </div>
+  <% } %>
+</main>
+
+<!-- Передаваем скины в JS -->
+<script>
+  const allSkins = <%- JSON.stringify(caseData?.skins || []) %>;
+</script>
+
+<!-- Стили -->
+<style>
+  body {
+    background-color: #111;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .navbar {
+    background-color: #1f1f1f;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .navbar-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .navbar-logo {
+    font-weight: bold;
+    font-size: 20px;
+    color: #9b4dff;
+  }
+
+  .navbar-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .navbar-links li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .open-btn {
+    display: inline-block;
+    background-color: #9b4dff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    margin-bottom: 30px;
+    cursor: pointer;
+  }
+
+  .skins-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    justify-items: center;
+    margin-top: 20px;
+  }
+
+  .skin-card {
+    background-color: #1a1a1a;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 200px;
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+
+  .skin-card:hover {
+    transform: scale(1.05);
+  }
+
+  .skin-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-overlay.show {
+    display: flex;
+  }
+
+  .modal-content {
+    background: #1c1c1c;
+    border: 2px solid #9b4dff;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    color: white;
+    max-width: 400px;
+    width: 90%;
+    animation: pop-in 0.3s ease-out;
+  }
+
+  .modal-content img {
+    width: 100%;
+    max-width: 250px;
+    margin: 15px 0;
+    border-radius: 6px;
+  }
+
+  .modal-content button {
+    background: #9b4dff;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  @keyframes pop-in {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+</style>
+
+<!-- Логика открытия кейса и модалка -->
+<script>
+  const roller = document.getElementById('roller');
+  const startBtn = document.getElementById('startRoll');
+  const modal = document.getElementById("modalOverlay");
+  const modalSkinImage = document.getElementById("modalSkinImage");
+  const modalSkinName = document.getElementById("modalSkinName");
+  const closeModal = document.getElementById('closeModal');
+
+  let lastDroppedSkin = null;
+
+  function showModal(skinImage, skinName) {
+    modalSkinImage.src = skinImage;
+    modalSkinName.textContent = skinName;
+    modal.classList.add("show");
+
+    lastDroppedSkin = allSkins.find(s => s.name === skinName);
+    if (lastDroppedSkin) {
+      document.getElementById("modalSkinPrice").textContent = lastDroppedSkin.price || 0;
+    }
+  }
+
+  startBtn?.addEventListener('click', () => {
+    startBtn.disabled = true;
+
+    const totalItems = roller.children.length;
+    const itemWidth = roller.children[0].offsetWidth + 20;
+    const visibleItems = 5;
+    const stopIndex = Math.floor(Math.random() * (totalItems - visibleItems * 2)) + visibleItems;
+    const offset = stopIndex * itemWidth - (itemWidth * (visibleItems / 2));
+
+    Array.from(roller.children).forEach(item => item.classList.remove('winning'));
+
+    roller.style.transition = 'transform 4s cubic-bezier(0.2, 0.8, 0.2, 1)';
+    roller.style.transform = `translateX(-${offset}px)`;
+
+    setTimeout(() => {
+      const dropped = roller.children[stopIndex];
+      if (!dropped) return startBtn.disabled = false;
+
+      dropped.classList.add('winning');
+      const skinImg = dropped.querySelector('img');
+      const skinName = skinImg?.alt || '???';
+      const skinSrc = skinImg?.src || '';
+      const rarity = dropped.className.match(/rarity-\w+/)?.[0]?.split('-')[1] || 'common';
+      const matchedSkin = allSkins.find(s => s.name === skinName);
+      const price = matchedSkin?.price || 0;
+
+      showModal(skinSrc, skinName);
+
+      fetch('/inventory/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: skinName, image: skinSrc, rarity: rarity, price: price })
+      }).catch(err => console.error('Ошибка при сохранении:', err));
+    }, 4000);
+  });
+
+  document.getElementById("sellForCoins")?.addEventListener("click", async () => {
+    if (!lastDroppedSkin) return alert("Скин не найден");
+
+    const response = await fetch("/inventory/sell", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: lastDroppedSkin.name })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      alert("Скин продан!");
+      modal.classList.remove("show");
+      startBtn.disabled = false;
+    } else {
+      alert("Ошибка при продаже.");
+    }
+  });
+
+  document.getElementById("putToMarket")?.addEventListener("click", async () => {
+    if (!lastDroppedSkin) return alert("Скин не найден");
+
+    const response = await fetch("/market/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: lastDroppedSkin.name })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      alert("Скин выставлен на маркет!");
+      modal.classList.remove("show");
+      startBtn.disabled = false;
+    } else {
+      alert("Ошибка при выставлении.");
+    }
+  });
+
+  closeModal?.addEventListener("click", () => {
+    modal.classList.remove("show");
+    startBtn.disabled = false;
+  });
+</script>

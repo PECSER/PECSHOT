@@ -1,0 +1,130 @@
+{
+  "freeCases": [
+    {
+      "name": "Free Starter",
+      "image": "/images/cases/free_starter.png",
+      "skins": [
+        {
+          "name": "AK-47 | Redline",
+          "image": "/images/skins/ak_redline.png",
+          "rarity": "classified",
+          "chance": 5,
+          "price": 500
+        },
+        {
+          "name": "USP-S | Cortex",
+          "image": "/images/skins/usp_cortex.png",
+          "rarity": "restricted",
+          "chance": 10,
+          "price": 200
+        },
+        {
+          "name": "AWP | Atheris",
+          "image": "/images/skins/awp_atheris.png",
+          "rarity": "restricted",
+          "chance": 12,
+          "price": 200
+        },
+        {
+          "name": "MP9 | Goo",
+          "image": "/images/skins/mp9_goo.png",
+          "rarity": "mil-spec",
+          "price": 50
+        },
+        {
+          "name": "P250 | Valence",
+          "image": "/images/skins/p250_valence.png",
+          "rarity": "mil-spec",
+          "chance": 25,
+          "price": 50
+        },
+        {
+          "name": "Nova | Koi",
+          "image": "/images/skins/nova_koi.png",
+          "rarity": "industrial",
+          "chance": 28,
+          "price": 25
+        }
+      ]
+    }
+  ],
+  "thematicCases": [
+    {
+      "name": "Ножевой кейс",
+      "image": "/images/cases/knife_case.png",
+      "price": 500
+    },
+    {
+      "name": "Перчаточный кейс",
+      "image": "/images/cases/glove_case.png",
+      "price": 450
+    },
+    {
+      "name": "Кейс с М-ками",
+      "image": "/images/cases/m4_case.png",
+      "price": 300
+    },
+    {
+      "name": "Кейс с АК-47",
+      "image": "/images/cases/ak_case.png",
+      "price": 300
+    },
+    {
+      "name": "AWP кейс",
+      "image": "/images/cases/awp_case.png",
+      "price": 350
+    }
+  ],
+  "regularCases": [
+    {
+      "name": "Revolution Case",
+      "image": "/images/cases/Revolution Case.png",
+      "price": 100
+    },
+    {
+      "name": "Dreams & Nightmares Case",
+      "image": "/images/cases/Dreams & Nightmares Case.png",
+      "price": 90
+    },
+    {
+      "name": "Recoil Case",
+      "image": "/images/cases/Recoil Case.png",
+      "price": 90
+    },
+    {
+      "name": "Snakebite Case",
+      "image": "/images/cases/Snakebite Case.png",
+      "price": 80
+    },
+    {
+      "name": "Fracture Case",
+      "image": "/images/cases/Fracture Case.png",
+      "price": 75
+    },
+    {
+      "name": "Clutch Case",
+      "image": "/images/cases/Clutch Case.png",
+      "price": 70
+    },
+    {
+      "name": "Prisma Case",
+      "image": "/images/cases/Prisma Case.png",
+      "price": 70
+    },
+    {
+      "name": "Danger Zone Case",
+      "image": "/images/cases/danger_zone.png",
+      "price": 60
+    },
+    {
+      "name": "CS20 Case",
+      "image": "/images/cases/cs20.png",
+      "price": 60
+    },
+    {
+      "name": "Gallery Case",
+      "image": "/images/cases/Gallery Case.png",
+      "price": 60
+    }
+  ]
+}

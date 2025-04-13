@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title><%= caseData.name %> — Открытие кейса</title>
+</head>
+<body>
+  <h1><%= caseData.name %></h1>
+  <img src="<%= caseData.image %>" alt="<%= caseData.name %>" width="200" />
+  <h2>Предметы:</h2>
+  <ul>
+    <% caseData.items.forEach(item => { %>
+      <li>
+        <img src="<%= item.image %>" alt="<%= item.name %>" width="50">
+        <%= item.name %>
+      </li>
+    <% }) %>
+  </ul>
+</body>
+</html>

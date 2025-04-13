@@ -1,0 +1,277 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Инвентарь</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<nav>
+  <a href="/">Главная</a>
+  <a href="/cases">Кейсы</a>
+  <a href="/inventory" class="active">Инвентарь</a>
+  <a href="/shop">Магазин</a>
+  <a href="/trade">Обмен</a>
+  <a href="/chat">Чат</a>
+  <a href="/profile">Профиль</a>
+  <a href="/auth/logout">Выход</a>
+</nav>
+
+<main class="container">
+  <h2>Ваш инвентарь</h2>
+
+  <% if (inventory.length === 0) { %>
+    <p>У вас пока нет скинов. Откройте кейс!</p>
+  <% } else { %>
+    <div class="skins-grid">
+      <%
+        const rarityOrder = {
+          'rare': 0,
+          'covert': 1,
+          'classified': 2,
+          'restricted': 3,
+          'mil-spec': 4,
+          'industrial': 5,
+          'common': 6
+        };
+
+        const sortedInventory = inventory.slice().sort((a, b) => {
+          return (rarityOrder[a.rarity] || 999) - (rarityOrder[b.rarity] || 999);
+        });
+
+        sortedInventory.forEach(skin => {
+      %>
+        <div class="skin-card rarity-<%= skin.rarity %>">
+          <img src="<%= skin.image %>" alt="<%= skin.name %>">
+          <p><strong><%= skin.name %></strong></p>
+
+          <div class="sell-btn" onclick="sellSkin('<%= skin.id %>', '<%= encodeURIComponent(skin.name) %>', '<%= encodeURIComponent(skin.image) %>', '<%= skin.price %>')">
+            Продать
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+
+<div id="sellModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3 id="modalName">Название</h3>
+    <img id="modalImage" src="" alt="" style="width: 150px; border-radius: 8px;">
+    <p>Цена: <span id="modalPrice">0</span></p>
+
+    <!-- Просто скрытые input-ы без формы -->
+    <input type="hidden" id="formId">
+    <input type="hidden" id="formName">
+    <input type="hidden" id="formImage">
+    <input type="hidden" id="formPrice">
+
+    <button type="button" class="btn-coins">Продать за коины</button>
+    <button type="button" class="btn-market">Выставить на продажу</button>
+  </div>
+</div>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #0f0f0f;
+  }
+
+  nav {
+    display: flex;
+    gap: 15px;
+    background-color: #111;
+    padding: 10px 20px;
+  }
+
+  nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 4px;
+  }
+
+  nav a.active {
+    background-color: #bb44ff;
+  }
+
+  .container {
+    padding: 20px;
+    color: white;
+  }
+
+  .skins-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    justify-items: center;
+    margin-top: 20px;
+  }
+
+  .skin-card {
+    background-color: #1a1a1a;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 200px;
+    text-align: center;
+    transition: transform 0.3s ease;
+    position: relative;
+  }
+
+  .skin-card img {
+    width: 100%;
+    border-radius: 6px;
+  }
+
+  .skin-card p {
+    margin: 6px 0;
+    font-size: 14px;
+  }
+
+  .sell-btn {
+    display: none;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #bb44ff;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .skin-card:hover .sell-btn {
+    display: block;
+  }
+
+  .modal {
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    background: #222;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    color: white;
+    max-width: 400px;
+    width: 90%;
+    position: relative;
+  }
+
+  .close {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #aaa;
+  }
+
+  .btn-coins, .btn-market {
+    margin: 10px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+  }
+
+  .btn-coins {
+    background-color: #bb44ff;
+  }
+
+  .btn-market {
+    background-color: #44bbff;
+  }
+
+  .close:hover {
+    color: white;
+  }
+</style>
+
+<script>
+  function sellSkin(id, name, image, price) {
+    name = decodeURIComponent(name);
+    image = decodeURIComponent(image);
+
+    document.getElementById('modalName').textContent = name;
+    document.getElementById('modalImage').src = image;
+    document.getElementById('modalImage').alt = name;
+    document.getElementById('modalPrice').textContent = price + ' коинов';
+
+    document.getElementById('formId').value = id;
+    document.getElementById('formName').value = name;
+    document.getElementById('formImage').value = image;
+    document.getElementById('formPrice').value = price;
+
+    document.getElementById('sellModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('sellModal').style.display = 'none';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.btn-coins').addEventListener('click', async (e) => {
+      const id = document.getElementById('formId').value;
+      try {
+        const res = await fetch('/inventory/sell', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Скин продан за коины!');
+          location.reload();
+        } else {
+          alert('Ошибка при продаже!');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Произошла ошибка!');
+      }
+    });
+
+    document.querySelector('.btn-market').addEventListener('click', async (e) => {
+      const id = document.getElementById('formId').value;
+      try {
+        const res = await fetch('/market/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Скин выставлен на маркет!');
+          location.reload();
+        } else {
+          alert('Ошибка при выставлении!');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Произошла ошибка!');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

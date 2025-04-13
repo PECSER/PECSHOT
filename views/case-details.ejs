@@ -1,0 +1,11 @@
+﻿<h3>Скины в кейсе:</h3>
+<div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+  <% caseData.skins.forEach(skin => { %>
+    <div style="background:#222; padding:10px; border-radius:10px; width:200px; text-align:center;">
+      <img src="<%= skin.image %>" style="width:100%; border-radius:6px;">
+      <p style="margin: 5px 0;"><strong><%= skin.name %></strong></p>
+      <p>Редкость: <%= skin.rarity %></p>
+      <p>Шанс: <%= skin.chance %>%</p>
+    </div>
+  <% }); %>
+</div>

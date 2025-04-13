@@ -1,0 +1,312 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Магазин | PECSHOT</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #eee;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    h2 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .sell-skin-link {
+      background-color: #bb44ff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+      transition: 0.2s;
+    }
+
+    .sell-skin-link:hover {
+      background-color: #a33de6;
+    }
+
+    .listing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 25px;
+      margin-top: 25px;
+    }
+
+    .listing-card {
+      background-color: #1c1c1c;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      transition: 0.2s;
+      box-shadow: 0 0 10px rgba(187, 68, 255, 0.1);
+    }
+
+    .listing-card:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 20px rgba(187, 68, 255, 0.3);
+    }
+
+    .listing-card img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .buy-btn {
+      padding: 10px 15px;
+      border-radius: 6px;
+      color: white;
+      border: none;
+      margin-top: 10px;
+      width: 100%;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .buy-btn.enabled {
+      background-color: #44bb88;
+      cursor: pointer;
+    }
+
+    .buy-btn:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+    }
+
+    .modal {
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.75);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: #222;
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      color: white;
+      max-width: 420px;
+      width: 90%;
+      position: relative;
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    }
+
+    .close {
+      position: absolute;
+      top: 12px;
+      right: 15px;
+      font-size: 22px;
+      cursor: pointer;
+      color: #aaa;
+    }
+
+    .close:hover {
+      color: white;
+    }
+
+    .modal-img {
+      width: 160px;
+      border-radius: 10px;
+      margin: 10px 0 20px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .btn-coins, .btn-market {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: white;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .btn-coins {
+      background-color: #bb44ff;
+    }
+
+    .btn-market {
+      background-color: #44aaff;
+    }
+
+    .btn-coins:hover {
+      background-color: #a73bd8;
+    }
+
+    .btn-market:hover {
+      background-color: #3399dd;
+    }
+
+    .alert {
+      background-color: #27ae60;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Навбар -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-logo">PECSHOT</div>
+    <ul class="navbar-links">
+      <li><a href="profile">Профиль</a></li>
+      <li><a href="/inventory">Инвентарь</a></li>
+      <li><a href="cases">Кейсы</a></li>
+      <li><a href="shop">Магазин</a></li>
+      <li><a href="trade">Обмен</a></li>
+      <li><a href="chat">Чат</a></li>
+      <li><a href="logout">Выход</a></li>
+    </ul>
+    <div class="balance">💰Coins: <span id="coinsCount"><%= user.balance %></span></div>
+
+  </div>
+</nav>
+
+
+<!-- ...тот же <head> и стили... -->
+<% /* весь head остаётся без изменений */ %>
+
+<main class="container">
+  <h2>🛒 Магазин</h2>
+
+  <% if (message) { %>
+    <div class="alert"><%= message %></div>
+  <% } %>
+
+  <a href="/inventory?sellMode=true" class="sell-skin-link">+ Продать скин</a>
+
+  <% if (listings.length === 0) { %>
+    <p>Пока ничего не продается...</p>
+  <% } else { %>
+    <div class="listing-grid">
+      <% listings.forEach(listing => { %>
+        <div class="listing-card">
+          <img src="<%= listing.item.image %>" alt="<%= listing.item.name %>">
+          <h4><%= listing.item.name %></h4>
+          <p><strong><%= listing.price %> Coins</strong></p>
+          <p>Продавец: <%= listing.seller.username %></p>
+
+          <% if (user._id.toString() !== listing.seller._id.toString()) { %>
+            <form method="POST" action="/shop/buy">
+              <input type="hidden" name="id" value="<%= listing._id %>">
+              <button type="submit" class="buy-btn enabled">Купить</button>
+            </form>
+          <% } else { %>
+            <form method="POST" action="/shop/remove-listing">
+              <input type="hidden" name="listingId" value="<%= listing._id %>">
+              <input type="hidden" name="itemId" value="<%= listing.item.id %>">
+              <button type="submit" class="buy-btn" style="background-color: #ff5555;">Снять с продажи</button>
+            </form>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <!-- Модалка продажи -->
+  <div id="sellModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h3 id="modalName">Название</h3>
+      <img id="modalImage" src="" alt="" class="modal-img">
+      
+      <form method="POST" action="/shop/confirm-sell">
+        <input type="hidden" name="id" id="formId">
+        <input type="hidden" name="name" id="formName">
+        <input type="hidden" name="image" id="formImage">
+
+        <label for="price">Укажите цену:</label>
+        <input type="number" name="price" id="formPrice" required
+               style="width: 100%; padding: 10px; margin-top: 10px; border-radius: 8px; border: none; background: #2a2a2a; color: white;">
+
+        <div class="modal-buttons">     
+          <button type="submit" name="action" value="market" class="btn-market">📦 Выставить в магазин</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script>
+  function closeModal() {
+    const modal = document.getElementById('sellModal');
+    if (modal) modal.classList.remove('show');
+  }
+
+  // Подсветка активной вкладки
+  const navLinks = document.querySelectorAll(".navbar a");
+  navLinks.forEach(link => {
+    if (link.href === window.location.href) {
+      link.classList.add("active");
+    }
+  });
+
+  // Автоматически открывает модалку, если есть параметры в URL
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('openModal') === '1') {
+      const id = params.get('id');
+      const name = decodeURIComponent(params.get('name') || '');
+      const image = decodeURIComponent(params.get('image') || '');
+      const price = params.get('price') || '';
+
+      document.getElementById('modalName').textContent = name;
+      document.getElementById('modalImage').src = image;
+      document.getElementById('modalImage').alt = name;
+
+      document.getElementById('formId').value = id;
+      document.getElementById('formName').value = name;
+      document.getElementById('formImage').value = image;
+      document.getElementById('formPrice').value = price;
+
+      document.getElementById('sellModal').classList.add('show');
+    }
+  });
+</script>
+</body>
+</html>
+

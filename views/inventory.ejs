@@ -1,0 +1,295 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Инвентарь | PECSHOT</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #eee;
+    }
+
+    h2 {
+      color: #fff;
+      margin: 20px;
+    }
+
+    .skins-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .skin-card {
+      background-color: #1c1c1c;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      transition: 0.2s;
+      position: relative;
+      box-shadow: 0 0 10px rgba(187, 68, 255, 0.1);
+    }
+
+    .skin-card:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 20px rgba(187, 68, 255, 0.3);
+    }
+
+    .skin-card img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .skin-card p {
+      margin: 5px 0;
+    }
+
+    .sell-btn {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #bb44ff;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      display: none;
+      font-weight: bold;
+    }
+
+    .skin-card:hover .sell-btn {
+      display: block;
+    }
+
+    .modal {
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #222;
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      color: white;
+      max-width: 420px;
+      width: 90%;
+      position: relative;
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    }
+
+    .close {
+      position: absolute;
+      top: 12px;
+      right: 15px;
+      font-size: 22px;
+      cursor: pointer;
+      color: #aaa;
+    }
+
+    .close:hover {
+      color: white;
+    }
+
+    .btn-coins, .btn-market {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: white;
+      font-size: 14px;
+      margin: 10px;
+    }
+
+    .btn-coins {
+      background-color: #bb44ff;
+    }
+
+    .btn-market {
+      background-color: #44aaff;
+    }
+
+    .btn-coins:hover {
+      background-color: #a03bd8;
+    }
+
+    .btn-market:hover {
+      background-color: #3399dd;
+    }
+
+    .modal-img {
+      width: 150px;
+      border-radius: 10px;
+      margin: 10px 0 20px;
+    }
+
+    .coins-balance {
+      margin: 0 20px 10px;
+      font-weight: bold;
+      color: #bb44ff;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Навбар -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-logo">PECSHOT</div>
+    <ul class="navbar-links">
+      <li><a href="profile">Профиль</a></li>
+      <li><a href="/inventory">Инвентарь</a></li>
+      <li><a href="cases">Кейсы</a></li>
+      <li><a href="shop">Магазин</a></li>
+      <li><a href="trade">Обмен</a></li>
+      <li><a href="chat">Чат</a></li>
+      <li><a href="logout">Выход</a></li>
+    </ul>
+    <div class="balance">💰Coins: <span id="coinsCount"><%= user.balance %></span></div>
+
+  </div>
+</nav>
+
+
+
+<main>
+  <h2>Ваш инвентарь</h2>
+ 
+
+  <% if (inventory.length === 0) { %>
+    <p style="margin: 20px;">У вас пока нет скинов. Откройте кейс!</p>
+  <% } else { 
+    const rarityOrder = {
+      'rare': 0,
+      'covert': 1,
+      'classified': 2,
+      'restricted': 3,
+      'mil-spec': 4,
+      'industrial': 5,
+      'common': 6
+    };
+
+    const sortedInventory = inventory.slice().sort((a, b) => {
+      return (rarityOrder[a.rarity] || 999) - (rarityOrder[b.rarity] || 999);
+    });
+  %>
+    <div class="skins-grid">
+      <% sortedInventory.forEach(skin => { %>
+        <div class="skin-card" id="item-<%= skin._id %>">
+          <img src="<%= skin.image %>" alt="<%= skin.name %>">
+          <p><strong><%= skin.name %></strong></p>
+          <div class="sell-btn"
+            onclick="sellSkin('<%= skin._id %>', '<%= encodeURIComponent(skin.name) %>', '<%= encodeURIComponent(skin.image) %>', '<%= skin.price %>')">
+            Продать
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+</main>
+
+<!-- Модалка -->
+<div id="sellModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3 id="modalName">Название</h3>
+    <img id="modalImage" src="" alt="" class="modal-img">
+    <p>Цена: <span id="modalPrice">0</span> коинов</p>
+
+    <button type="button" class="btn-coins" onclick="confirmSell()">💰 За коины</button>
+    <button type="button" class="btn-market" onclick="goToShop()">📦 В магазин</button>
+  </div>
+</div>
+
+<script>
+  let currentItemId = null;
+
+  function sellSkin(id, name, image, price) {
+    name = decodeURIComponent(name);
+    image = decodeURIComponent(image);
+    currentItemId = id;
+
+    document.getElementById('modalName').textContent = name;
+    document.getElementById('modalImage').src = image;
+    document.getElementById('modalImage').alt = name;
+    document.getElementById('modalPrice').textContent = price;
+
+    document.getElementById('sellModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('sellModal').style.display = 'none';
+    currentItemId = null;
+  }
+
+  function confirmSell() {
+    if (!currentItemId) return;
+
+    fetch('/inventory/sell', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: currentItemId })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        // Удаляем скин
+        document.getElementById(`item-${currentItemId}`).remove();
+
+        // Обновляем баланс коинов
+        const coinsElement = document.getElementById('coinsCount');
+        const currentCoins = parseInt(coinsElement.textContent);
+        coinsElement.textContent = currentCoins + data.coins;
+
+        // Закрываем модалку
+        closeModal();
+        
+        alert('✅ Предмет продан!');
+      } else {
+        alert('❌ Ошибка: ' + data.message);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert('❌ Ошибка сервера');
+    });
+  }
+
+  function goToShop() {
+    const name = encodeURIComponent(document.getElementById('modalName').textContent);
+    const image = encodeURIComponent(document.getElementById('modalImage').src);
+    const price = document.getElementById('modalPrice').textContent;
+
+    const url = `/shop?openModal=1&id=${currentItemId}&name=${name}&image=${image}&price=${price}`;
+    window.location.href = url;
+  }
+</script>
+
+<script>
+  // Подсветка активного пункта меню
+  const navLinks = document.querySelectorAll("nav a");
+  navLinks.forEach(link => {
+    if (link.href === window.location.href) {
+      link.classList.add("active");
+    }
+  });
+</script>
+
+</body>
+</html>

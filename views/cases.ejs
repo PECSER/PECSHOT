@@ -1,0 +1,73 @@
+﻿<!-- Навбар -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-logo">PECSHOT</div>
+    <ul class="navbar-links">
+      <li><a href="profile">Профиль</a></li>
+      <li><a href="/inventory">Инвентарь</a></li>
+      <li><a href="cases">Кейсы</a></li>
+      <li><a href="shop">Магазин</a></li>
+      <li><a href="trade">Обмен</a></li>
+      <li><a href="chat">Чат</a></li>
+      <li><a href="logout">Выход</a></li>
+    </ul>
+    <div class="balance">💰Coins: <span id="coinsCount"><%= user.balance %></span></div>
+
+  </div>
+</nav>
+
+<main class="container">
+  <h2 style="color: #fff;">Кейсы</h2>
+
+  <!-- Бесплатные кейсы -->
+  <section>
+    <h3 style="color: #fff;">Бесплатные кейсы</h3>
+    <div class="cases-grid">
+      <% freeCases.forEach(c => { %>
+        <div class="case-card">
+          <img src="<%= c.image %>" alt="<%= c.name %>">
+          <h3><%= c.name %></h3>
+          <a class="open-btn" href="/cases/<%= encodeURIComponent(c.name) %>">Открыть</a>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+
+  <!-- Тематические кейсы -->
+  <section>
+    <h3 style="color: #fff;">Тематические кейсы</h3>
+    <div class="cases-grid">
+      <% thematicCases.forEach(c => { %>
+        <div class="case-card">
+          <img src="<%= c.image %>" alt="<%= c.name %>">
+          <h3><%= c.name %></h3>
+          <p><%= c.price %> Coins</p>
+          <a class="open-btn" href="/cases/<%= encodeURIComponent(c.name) %>">Открыть</a>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+
+  <!-- Обычные кейсы -->
+  <section>
+    <h3 style="color: #fff;">Обычные кейсы</h3>
+    <div class="cases-grid">
+      <% regularCases.forEach(c => { %>
+        <div class="case-card">
+          <img src="<%= c.image %>" alt="<%= c.name %>">
+          <h3><%= c.name %></h3>
+          <p><%= c.price %> Coins</p>
+          <a class="open-btn" href="/cases/<%= encodeURIComponent(c.name) %>">Открыть</a>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+</main>
+<script>
+   const navLinks = document.querySelectorAll("nav a");
+  navLinks.forEach(link => {
+    if (link.href === window.location.href) {
+      link.classList.add("active");
+    }
+  });
+</script>
